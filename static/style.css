@@ -1,0 +1,44 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.login-container {
+    width: 300px;
+    margin: 100px auto;
+    text-align: center;
+    border: 1px solid #ccc;
+    padding: 20px;
+}
+
+.logo { width: 150px; }
+.logo-small { width: 50px; }
+
+header {
+    background: #f4f4f4;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-info { font-weight: bold; }
+
+.product-card {
+    display: flex;
+    border: 1px solid #333;
+    margin: 10px;
+    padding: 10px;
+}
+
+.product-photo img { width: 100px; height: 100px; }
+.product-details { flex-grow: 1; padding: 0 20px; }
+.product-price-section { width: 150px; text-align: right; border-left: 1px solid #ccc; padding-left: 10px; }
+
+.out-of-stock { background-color: #ADD8E6 !important; } /* Голубой цвет */
+
+.old-price { text-decoration: line-through; color: red; }
+.current-price { color: black; font-weight: bold; }
+.discount { font-weight: bold; }
+.error { color: red; }

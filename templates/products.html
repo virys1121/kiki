@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Список товаров - Магазин игрушек</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo-small">
+        <div class="user-info">
+            {{ user_name }} ({{ role_name }})
+            <a href="{{ url_for('logout') }}">Выход</a>
+        </div>
+    </header>
+    <main>
+        <h1>Список товаров</h1>
+        <div class="product-list">
+            {% for product in products %}
+            <div class="product-card {% if product.ProductQuantityInStock == 0 %}out-of-stock{% endif %}"
+                 style="{% if product.ProductDiscount > 17 %}background-color: #FFDEAD;{% endif %}">
+                <div class="product-photo">
+                    <img src="{{ url_for('static', filename='images/' + (product.ProductPhoto or 'picture.png')) }}" alt="Photo">
+                </div>
+                <div class="product-details">
+                    <h3>{{ product.ProductCategory }} | {{ product.ProductName }}</h3>
+                    <p>{{ product.ProductDescription }}</p>
+                    <p>Производитель: {{ product.ProductManufacturer }}</p>
+                    <p>Поставщик: {{ product.ProductSupplier }}</p>
+                    <p>Единица измерения: {{ product.ProductUnit }}</p>
+                    <p>Количество на складе: {{ product.ProductQuantityInStock }}</p>
+                </div>
+                <div class="product-price-section">
+                    <p>Цена:
+                        {% if product.ProductDiscount > 0 %}
+                        <span class="old-price">{{ product.ProductPrice }}</span>
+                        <span class="current-price">{{ (product.ProductPrice * (100 - product.ProductDiscount) / 100)|round(2) }}</span>
+                        {% else %}
+                        <span class="current-price">{{ product.ProductPrice }}</span>
+                        {% endif %}
+                    </p>
+                    {% if product.ProductDiscount > 0 %}
+                    <p class="discount">Скидка: {{ product.ProductDiscount }}%</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+</body>
+</html>
