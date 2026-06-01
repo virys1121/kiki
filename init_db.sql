@@ -17,9 +17,10 @@ CREATE TABLE Users (
     FOREIGN KEY (UserRole) REFERENCES Roles(RoleID)
 );
 
--- Products table updated for Module 2
+-- Products table
 CREATE TABLE Products (
-    ProductArticleNumber TEXT PRIMARY KEY,
+    ProductID INTEGER PRIMARY KEY AUTOINCREMENT,
+    ProductArticleNumber TEXT NOT NULL UNIQUE,
     ProductName TEXT NOT NULL,
     ProductCategory TEXT NOT NULL,
     ProductDescription TEXT,
@@ -29,7 +30,7 @@ CREATE TABLE Products (
     ProductUnit TEXT NOT NULL,
     ProductQuantityInStock INTEGER NOT NULL DEFAULT 0,
     ProductDiscount INTEGER NOT NULL DEFAULT 0,
-    ProductPhoto TEXT -- Path to image or NULL
+    ProductPhoto TEXT
 );
 
 -- Orders table
@@ -44,12 +45,12 @@ CREATE TABLE Orders (
 -- OrderItems table
 CREATE TABLE OrderItems (
     OrderID INTEGER NOT NULL,
-    ProductArticleNumber TEXT NOT NULL,
+    ProductID INTEGER NOT NULL,
     ItemQuantity INTEGER NOT NULL DEFAULT 1,
     ItemPrice REAL NOT NULL,
-    PRIMARY KEY (OrderID, ProductArticleNumber),
+    PRIMARY KEY (OrderID, ProductID),
     FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
-    FOREIGN KEY (ProductArticleNumber) REFERENCES Products(ProductArticleNumber)
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
 );
 
 -- Insert Roles
@@ -63,7 +64,7 @@ INSERT INTO Users (UserFullName, UserLogin, UserPassword, UserRole) VALUES ('И�
 INSERT INTO Users (UserFullName, UserLogin, UserPassword, UserRole) VALUES ('Петров Петр Петрович', 'manager', 'manager123', 2);
 INSERT INTO Users (UserFullName, UserLogin, UserPassword, UserRole) VALUES ('Сидоров Сидор Сидорович', 'client', 'client123', 3);
 
--- Insert Sample Products with varied discounts and stock levels
+-- Insert Sample Products
 INSERT INTO Products (ProductArticleNumber, ProductName, ProductCategory, ProductDescription, ProductManufacturer, ProductSupplier, ProductPrice, ProductUnit, ProductQuantityInStock, ProductDiscount, ProductPhoto)
 VALUES ('T001', 'Конструктор Лего', 'Игрушки', 'Большой набор для сборки города', 'LEGO Group', 'Lego Russia', 5000.00, 'шт.', 10, 20, NULL);
 
@@ -73,9 +74,6 @@ VALUES ('T002', 'Кукла Барби', 'Игрушки', 'Модная кук�
 INSERT INTO Products (ProductArticleNumber, ProductName, ProductCategory, ProductDescription, ProductManufacturer, ProductSupplier, ProductPrice, ProductUnit, ProductQuantityInStock, ProductDiscount, ProductPhoto)
 VALUES ('T003', 'Машинка Хот Вилс', 'Игрушки', 'Гоночный автомобиль', 'Mattel', 'ToyWorld', 300.00, 'шт.', 0, 5, NULL);
 
-INSERT INTO Products (ProductArticleNumber, ProductName, ProductCategory, ProductDescription, ProductManufacturer, ProductSupplier, ProductPrice, ProductUnit, ProductQuantityInStock, ProductDiscount, ProductPhoto)
-VALUES ('T004', 'Мягкий медведь', 'Игрушки', 'Плюшевый мишка', 'PlushToys', 'PlushToys', 1000.00, 'шт.', 5, 0, NULL);
-
 -- Insert Sample Orders
 INSERT INTO Orders (OrderID, OrderStatus, OrderUserID) VALUES (1, 'Новый', 3);
-INSERT INTO OrderItems (OrderID, ProductArticleNumber, ItemQuantity, ItemPrice) VALUES (1, 'T001', 1, 5000.00);
+INSERT INTO OrderItems (OrderID, ProductID, ItemQuantity, ItemPrice) VALUES (1, 1, 1, 5000.00);

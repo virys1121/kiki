@@ -42,3 +42,54 @@ header {
 .current-price { color: black; font-weight: bold; }
 .discount { font-weight: bold; }
 .error { color: red; }
+
+.controls {
+    padding: 20px;
+    background: #eee;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn {
+    padding: 10px 20px;
+    background: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.alert {
+    padding: 15px;
+    margin: 15px;
+    border-radius: 5px;
+    border: 1px solid;
+    position: relative;
+}
+.alert::before {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+.alert.error {
+    background: #ffcccc;
+    color: #cc0000;
+    border-color: #cc0000;
+}
+.alert.error::before { content: "⚠ ОШИБКА"; }
+
+.alert.info {
+    background: #ccffcc;
+    color: #006600;
+    border-color: #006600;
+}
+.alert.info::before { content: "ℹ ИНФОРМАЦИЯ"; }
+
+form label { display: block; margin-top: 10px; }
+form input, form select, form textarea { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
+.form-container { width: 500px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; }
+
+[onclick] { cursor: pointer; }
+[onclick]:hover { border-color: #000; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
+.photo-preview { margin: 10px 0; }
