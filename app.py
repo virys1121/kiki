@@ -36,6 +36,28 @@ def login():
 
     return render_template('login.html')
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        full_name = request.form['full_name']
+        login = request.form['login']
+        password = request.form['password']
+
+        conn = get_db_connection()
+        try:
+            # All registered users are 'Клиент' by default (RoleID = 3)
+            conn.execute('INSERT INTO Users (UserFullName, UserLogin, UserPassword, UserRole) VALUES (?, ?, ?, 3)',
+                         (full_name, login, password))
+            conn.commit()
+            flash('Регистрация успешна! Теперь вы можете войти.', 'info')
+            return redirect(url_for('login'))
+        except sqlite3.IntegrityError:
+            flash('Пользователь с таким логином уже существует', 'error')
+        finally:
+            conn.close()
+
+    return render_template('register.html')
+
 @app.route('/guest')
 def guest_login():
     session.clear()

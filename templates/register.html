@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Вход - Магазин игрушек</title>
+    <title>Регистрация - Магазин игрушек</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="login-container">
         <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo">
-        <h1>Вход в систему</h1>
+        <h1>Регистрация</h1>
         <form method="POST">
-            <input type="text" name="login" placeholder="Логин"><br>
-            <input type="password" name="password" placeholder="Пароль"><br>
-            <button type="submit">Войти</button>
+            <input type="text" name="full_name" placeholder="ФИО" required><br>
+            <input type="text" name="login" placeholder="Логин" required><br>
+            <input type="password" name="password" placeholder="Пароль" required><br>
+            <button type="submit">Зарегистрироваться</button>
         </form>
-        <a href="{{ url_for('guest_login') }}">Войти как гость</a>
-        <p><a href="{{ url_for('register') }}">Создать аккаунт</a></p>
+        <p><a href="{{ url_for('login') }}">Уже есть аккаунт? Войти</a></p>
+
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             {% for category, message in messages %}
