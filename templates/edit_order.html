@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ 'Добавление' if mode == 'add' else 'Редактирование' }} заказа - Магазин игрушек</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo-small">
+        <div class="user-info">
+            <a href="{{ url_for('view_orders') }}">Назад к заказам</a>
+        </div>
+    </header>
+    <main>
+        <h1>{{ 'Новый заказ' if mode == 'add' else 'Заказ №' ~ order.OrderID }}</h1>
+
+        {% if mode == 'add' %}
+        <form method="POST">
+            <div class="form-group">
+                <label>Клиент:</label>
+                <select name="user_id" required>
+                    {% for user in users %}
+                    <option value="{{ user.UserID }}">{{ user.UserFullName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Статус:</label>
+                <input type="text" name="status" value="Новый" required>
+            </div>
+            <button type="submit" class="btn">Создать и добавить товары</button>
+        </form>
+        {% else %}
+        <section class="order-details">
+            <form method="POST">
+                <div class="form-group">
+                    <label>Клиент: {{ order.UserFullName }}</label>
+                </div>
+                <div class="form-group">
+                    <label>Статус:</label>
+                    <input type="text" name="status" value="{{ order.OrderStatus }}" required>
+                </div>
+                <button type="submit" name="update_order" class="btn">Обновить статус</button>
+            </form>
+        </section>
+
+        <hr>
+
+        <section class="order-items-edit">
+            <h2>Товары в заказе</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Товар</th>
+                        <th>Кол-во</th>
+                        <th>Действие</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>{{ item.ProductName }}</td>
+                        <td>{{ item.ItemQuantity }}</td>
+                        <td>
+                            <form method="POST" style="display:inline;">
+                                <input type="hidden" name="product_id" value="{{ item.ProductID }}">
+                                <button type="submit" name="remove_item" class="btn btn-delete">Удалить</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h3>Добавить товар</h3>
+            <form method="POST" class="add-item-form">
+                <select name="product_id" required>
+                    {% for product in products %}
+                    <option value="{{ product.ProductID }}">{{ product.ProductName }} ({{ product.ProductPrice }} руб.)</option>
+                    {% endfor %}
+                </select>
+                <input type="number" name="quantity" value="1" min="1" required>
+                <button type="submit" name="add_item" class="btn">Добавить</button>
+            </form>
+        </section>
+        {% endif %}
+    </main>
+</body>
+</html>

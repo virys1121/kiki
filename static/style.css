@@ -93,3 +93,53 @@ form input, form select, form textarea { width: 100%; padding: 8px; margin-top: 
 [onclick] { cursor: pointer; }
 [onclick]:hover { border-color: #000; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
 .photo-preview { margin: 10px 0; }
+
+.order-card {
+    border: 2px solid #555;
+    margin: 20px 0;
+    padding: 15px;
+    background: #fff;
+    border-radius: 8px;
+}
+
+.order-header {
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+}
+
+.order-items table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.order-items th, .order-items td {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.order-items tfoot th {
+    text-align: right;
+    padding-top: 15px;
+}
+
+.btn-delete {
+    background: #f44336 !important;
+}
+
+.order-actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.add-item-form {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.add-item-form input, .add-item-form select {
+    width: auto;
+}

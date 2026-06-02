@@ -9,6 +9,10 @@
         <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo-small">
         <div class="user-info">
             {{ session.user_name }} ({{ session.role_name }})
+            <a href="{{ url_for('products') }}">Товары</a>
+            {% if session.role_name in ['Менеджер', 'Администратор'] %}
+            <a href="{{ url_for('view_orders') }}">Заказы</a>
+            {% endif %}
             <a href="{{ url_for('logout') }}">Выход</a>
         </div>
     </header>

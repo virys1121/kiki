@@ -242,6 +242,117 @@ def delete_product(product_id):
     session.pop('editing_product_id', None)
     return redirect(url_for('products'))
 
+@app.route('/orders')
+def view_orders():
+    if session.get('role_name') not in ['Менеджер', 'Администратор']:
+        flash('Доступ запрещен', 'error')
+        return redirect(url_for('products'))
+
+    conn = get_db_connection()
+    # Join with users to get FIO
+    orders = conn.execute('''
+        SELECT o.*, u.UserFullName
+        FROM Orders o
+        JOIN Users u ON o.OrderUserID = u.UserID
+        ORDER BY o.OrderDate DESC
+    ''').fetchall()
+
+    # For each order, get items
+    order_list = []
+    for order in orders:
+        items = conn.execute('''
+            SELECT oi.*, p.ProductName
+            FROM OrderItems oi
+            JOIN Products p ON oi.ProductID = p.ProductID
+            WHERE oi.OrderID = ?
+        ''', (order['OrderID'],)).fetchall()
+
+        total_price = sum(item['ItemQuantity'] * item['ItemPrice'] for item in items)
+
+        order_list.append({
+            'data': order,
+            'order_items': items,
+            'total_price': total_price
+        })
+
+    conn.close()
+    return render_template('orders.html', orders=order_list, role_name=session.get('role_name'), user_name=session.get('user_name'))
+
+@app.route('/orders/add', methods=['GET', 'POST'])
+def add_order():
+    if session.get('role_name') != 'Администратор':
+        flash('Доступ запрещен', 'error')
+        return redirect(url_for('view_orders'))
+
+    conn = get_db_connection()
+    if request.method == 'POST':
+        user_id = request.form['user_id']
+        status = request.form['status']
+
+        cursor = conn.cursor()
+        cursor.execute('INSERT INTO Orders (OrderStatus, OrderUserID) VALUES (?, ?)', (status, user_id))
+        order_id = cursor.lastrowid
+        conn.commit()
+        conn.close()
+        return redirect(url_for('edit_order', order_id=order_id))
+
+    users = conn.execute('SELECT UserID, UserFullName FROM Users WHERE UserRole = 3').fetchall() # Clients
+    conn.close()
+    return render_template('edit_order.html', mode='add', users=users)
+
+@app.route('/orders/edit/<int:order_id>', methods=['GET', 'POST'])
+def edit_order(order_id):
+    if session.get('role_name') != 'Администратор':
+        flash('Доступ запрещен', 'error')
+        return redirect(url_for('view_orders'))
+
+    conn = get_db_connection()
+    if request.method == 'POST':
+        if 'update_order' in request.form:
+            status = request.form['status']
+            conn.execute('UPDATE Orders SET OrderStatus = ? WHERE OrderID = ?', (status, order_id))
+            conn.commit()
+            flash('Заказ обновлен', 'info')
+        elif 'add_item' in request.form:
+            product_id = request.form['product_id']
+            quantity = int(request.form['quantity'])
+
+            product = conn.execute('SELECT ProductPrice FROM Products WHERE ProductID = ?', (product_id,)).fetchone()
+            if product:
+                try:
+                    conn.execute('INSERT INTO OrderItems (OrderID, ProductID, ItemQuantity, ItemPrice) VALUES (?, ?, ?, ?)',
+                                 (order_id, product_id, quantity, product['ProductPrice']))
+                    conn.commit()
+                except sqlite3.IntegrityError:
+                    conn.execute('UPDATE OrderItems SET ItemQuantity = ItemQuantity + ? WHERE OrderID = ? AND ProductID = ?',
+                                 (quantity, order_id, product_id))
+                    conn.commit()
+        elif 'remove_item' in request.form:
+            product_id = request.form['product_id']
+            conn.execute('DELETE FROM OrderItems WHERE OrderID = ? AND ProductID = ?', (order_id, product_id))
+            conn.commit()
+
+    order = conn.execute('SELECT o.*, u.UserFullName FROM Orders o JOIN Users u ON o.OrderUserID = u.UserID WHERE OrderID = ?', (order_id,)).fetchone()
+    items = conn.execute('SELECT oi.*, p.ProductName FROM OrderItems oi JOIN Products p ON oi.ProductID = p.ProductID WHERE oi.OrderID = ?', (order_id,)).fetchall()
+    products = conn.execute('SELECT ProductID, ProductName, ProductPrice FROM Products WHERE ProductQuantityInStock > 0').fetchall()
+
+    conn.close()
+    return render_template('edit_order.html', mode='edit', order=order, items=items, products=products)
+
+@app.route('/orders/delete/<int:order_id>', methods=['POST'])
+def delete_order(order_id):
+    if session.get('role_name') != 'Администратор':
+        flash('Доступ запрещен', 'error')
+        return redirect(url_for('view_orders'))
+
+    conn = get_db_connection()
+    conn.execute('DELETE FROM OrderItems WHERE OrderID = ?', (order_id,))
+    conn.execute('DELETE FROM Orders WHERE OrderID = ?', (order_id,))
+    conn.commit()
+    conn.close()
+    flash('Заказ удален', 'info')
+    return redirect(url_for('view_orders'))
+
 @app.route('/logout')
 def logout():
     session.clear()
